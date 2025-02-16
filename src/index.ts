@@ -23,15 +23,34 @@ const nextURL = process.env.ORIGIN as string;
 //   credentials: true
 // }))
 
+// app.use(
+//   cors({
+//     origin: "https://chat-app-client-rose.vercel.app",
+//     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     allowedHeaders: "Content-Type,Authorization",
+//     credentials: true,
+//   })
+// );
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://chat-app-client-rose.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "https://chat-app-client-rose.vercel.app",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    allowedHeaders: "Content-Type,Authorization",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
-
 // app.use("/uploads/profiles", express.static("/uploads/profiles"));
 
 app.use("/src/uploads/profiles", express.static("src/uploads/profiles"));
