@@ -5,35 +5,28 @@ import Message from "./models/messages-model";
 import { MessagesTypes } from "./types/constant";
 
 const SetupSocket = (server: Server) => {
+  // const io = new SockeIOServer(server, {
+  //   cors: {
+  //     origin: [
+  //       "https://chat-app-server-q8xe.onrender.com",
+  //       "http://localhost:3000",
+  //     ],
+  //     methods: ["GET", "POST"],
+  //     credentials: true,
+  //   },
+  // });
+
   const io = new SockeIOServer(server, {
     cors: {
       origin: [
-        "https://chat-app-server-q8xe.onrender.com",
+        "wss://chat-app-server-q8xe.onrender.com",
         "http://localhost:3000",
       ],
       methods: ["GET", "POST"],
       credentials: true,
     },
+    transports: ["websocket", "polling"], // Add polling fallback
   });
-
-  // const io = new SockeIOServer(server, {
-  //   cors: {
-  //     origin: (origin, callback) => {
-  //       console.log("Origin received in CORS:", origin);
-  //       const allowedOrigins = [
-  //         "https://chat-app-client-rose.vercel.app",
-  //         "http://localhost:3000",
-  //       ];
-  //       if (!origin || allowedOrigins.includes(origin)) {
-  //         callback(null, true);
-  //       } else {
-  //         callback(new Error("Not allowed by CORS"));
-  //       }
-  //     },
-  //     methods: ["GET", "POST"],
-  //     credentials: true,
-  //   },
-  // });
 
   const userSocketMap = new Map();
 
