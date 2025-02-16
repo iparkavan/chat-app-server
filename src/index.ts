@@ -25,7 +25,7 @@ const nextURL = process.env.ORIGIN as string;
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://chat-app-client-rose.vercel.app",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     allowedHeaders: "Content-Type,Authorization",
     credentials: true,
