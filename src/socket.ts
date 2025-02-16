@@ -16,6 +16,25 @@ const SetupSocket = (server: Server) => {
     },
   });
 
+  // const io = new SockeIOServer(server, {
+  //   cors: {
+  //     origin: (origin, callback) => {
+  //       console.log("Origin received in CORS:", origin);
+  //       const allowedOrigins = [
+  //         "https://chat-app-client-rose.vercel.app",
+  //         "http://localhost:3000",
+  //       ];
+  //       if (!origin || allowedOrigins.includes(origin)) {
+  //         callback(null, true);
+  //       } else {
+  //         callback(new Error("Not allowed by CORS"));
+  //       }
+  //     },
+  //     methods: ["GET", "POST"],
+  //     credentials: true,
+  //   },
+  // });
+
   const userSocketMap = new Map();
 
   const disconnect = (
