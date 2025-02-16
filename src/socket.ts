@@ -7,7 +7,7 @@ import { MessagesTypes } from "./types/constant";
 const SetupSocket = (server: Server) => {
   const io = new SockeIOServer(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: "https://chat-app-server-q8xe.onrender.com",
       methods: "GET,POST",
       credentials: true,
     },
@@ -40,7 +40,7 @@ const SetupSocket = (server: Server) => {
       .populate(
         "recipient",
         "id email firstName lastName profileImage bgColor"
-      );     
+      );
 
     if (recipientSocketId) {
       io.to(recipientSocketId).emit("recieveMessage", messageData);
