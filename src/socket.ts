@@ -7,8 +7,11 @@ import { MessagesTypes } from "./types/constant";
 const SetupSocket = (server: Server) => {
   const io = new SockeIOServer(server, {
     cors: {
-      origin: "https://chat-app-server-q8xe.onrender.com",
-      methods: "GET,POST",
+      origin: [
+        "https://chat-app-server-q8xe.onrender.com",
+        "http://localhost:3000",
+      ],
+      methods: ["GET", "POST"],
       credentials: true,
     },
   });
