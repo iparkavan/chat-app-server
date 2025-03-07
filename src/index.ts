@@ -33,8 +33,8 @@ const nextURL = process.env.ORIGIN as string;
 // );
 
 const allowedOrigins = [
-  "http://localhost:3000",
   "https://chat-app-client-rose.vercel.app",
+  "http://localhost:3000",
 ];
 
 app.use(
