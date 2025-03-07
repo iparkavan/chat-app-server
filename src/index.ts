@@ -46,11 +46,12 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
 // app.use("/uploads/profiles", express.static("/uploads/profiles"));
 
 app.use("/src/uploads/profiles", express.static("src/uploads/profiles"));
@@ -70,9 +71,17 @@ const server: Server = app.listen(port, () => {
 SetupSocket(server);
 // console.log(process.env.DATABASE_URL as string)
 
+// mongoose
+//   .connect(databaseURL)
+//   .then(() => console.log("Database Connected Successfully"))
+//   .catch((err) => console.log(err.message));
+
 mongoose
   .connect(databaseURL)
   .then(() => console.log("Database Connected Successfully"))
-  .catch((err) => console.log(err.message));
+  .catch((err) => {
+    console.error("MongoDB Connection Error:", err.message);
+    process.exit(1); // Exit if database connection fails
+  });
 
 // nQumkesk6qvtou8C

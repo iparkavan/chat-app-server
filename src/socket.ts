@@ -5,27 +5,17 @@ import Message from "./models/messages-model";
 import { MessagesTypes } from "./types/constant";
 
 const SetupSocket = (server: Server) => {
-  // const io = new SockeIOServer(server, {
-  //   cors: {
-  //     origin: [
-  //       "https://chat-app-server-q8xe.onrender.com",
-  //       "http://localhost:3000",
-  //     ],
-  //     methods: ["GET", "POST"],
-  //     credentials: true,
-  //   },
-  // });
-
   const io = new SockeIOServer(server, {
     cors: {
       origin: [
-        "wss://chat-app-server-q8xe.onrender.com",
+        "https://chat-app-client-rose.vercel.app", // ✅ Frontend URL
         "http://localhost:3000",
       ],
       methods: ["GET", "POST"],
       credentials: true,
     },
-    transports: ["websocket", "polling"], // Add polling fallback
+    transports: ["websocket", "polling"], // ✅ Ensures stable connection
+    allowEIO3: true, // ✅ Allow legacy support
   });
 
   const userSocketMap = new Map();
