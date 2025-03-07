@@ -69,12 +69,6 @@ const server: Server = app.listen(port, () => {
 });
 
 SetupSocket(server);
-// console.log(process.env.DATABASE_URL as string)
-
-// mongoose
-//   .connect(databaseURL)
-//   .then(() => console.log("Database Connected Successfully"))
-//   .catch((err) => console.log(err.message));
 
 mongoose
   .connect(databaseURL)

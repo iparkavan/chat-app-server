@@ -20,13 +20,25 @@ const SetupSocket = (server: Server) => {
 
   const userSocketMap = new Map();
 
-  const disconnect = (
-    socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
-  ) => {
-    console.log(`client disconnected: ${socket.id}`);
+  // const disconnect = (
+  //   socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+  // ) => {
+  //   console.log(`client disconnected: ${socket.id}`);
+
+  //   for (const [userId, socketId] of userSocketMap.entries()) {
+  //     if (userId === socketId) {
+  //       userSocketMap.delete(userId);
+  //       break;
+  //     }
+  //   }
+  // };
+
+  const disconnect = (socket: Socket) => {
+    console.log(`❌ User disconnected: ${socket.id}`);
 
     for (const [userId, socketId] of userSocketMap.entries()) {
-      if (userId === socketId) {
+      if (socketId === socket.id) {
+        console.log(`Removing user ${userId} from active sockets.`);
         userSocketMap.delete(userId);
         break;
       }
