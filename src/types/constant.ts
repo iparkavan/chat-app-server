@@ -37,6 +37,7 @@ export type MessagesTypes = {
   content: string | undefined;
   fileUrl: string | undefined;
   timestamp: string;
+  channelId: string;
 };
 
 // types.d.ts

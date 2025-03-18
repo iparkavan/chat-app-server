@@ -3,6 +3,8 @@ import { Server as SockeIOServer, Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import Message from "./models/messages-model";
 import { MessagesTypes } from "./types/constant";
+import Channel from "./models/chennel-model";
+import { create } from "domain";
 
 const SetupSocket = (server: Server) => {
   const io = new SockeIOServer(server, {
@@ -68,6 +70,61 @@ const SetupSocket = (server: Server) => {
     }
   };
 
+  const sendChannelMessage = async (message: MessagesTypes) => {
+    const { channelId, sender, content, messageType, fileUrl } = message;
+
+    const createdMessage = await Message.create({
+      sender,
+      recipient: null,
+      content,
+      messageType,
+      timestamp: new Date(),
+      fileUrl,
+    });
+
+    const messageData = await Message.findById(createdMessage._id)
+      .populate("sender", "id email firstName lastName profileImage bgColor")
+      .exec();
+
+    // const messageData = await Message.create(message).then((msg) =>
+    //   msg.populate(
+    //     "sender recipient",
+    //     "id email firstName lastName profileImage bgColor"
+    //   )
+    // );
+
+    if (!messageData) {
+      console.error("Message not found after creation");
+      return;
+    }
+
+    await Channel.findByIdAndUpdate(channelId, {
+      $push: { messages: createdMessage._id },
+    });
+
+    const channel = await Channel.findById(channelId).populate("members");
+
+    if (messageData) {
+      const finalData = { ...messageData.toObject(), channel };
+
+      if (channel && channel.members) {
+        channel.members.forEach((member) => {
+          const memberSocketId = userSocketMap.get(member._id.toString());
+          if (memberSocketId) {
+            io.to(memberSocketId).emit("recieve-channel-message", finalData);
+          }
+        });
+
+        // if (channel?.admin?._id) {
+        const adminSocketId = userSocketMap.get(channel.admin._id.toString());
+        if (adminSocketId) {
+          io.to(adminSocketId).emit("recieve-channel-message", finalData);
+        }
+        // }
+      }
+    }
+  };
+
   io.on("connection", (socket) => {
     const userId = socket.handshake.query.userId;
 
@@ -79,6 +136,7 @@ const SetupSocket = (server: Server) => {
     }
 
     socket.on("sendMessage", sendMessage);
+    socket.on("send-channel-message", sendChannelMessage);
 
     socket.on("disconnect", () => disconnect(socket));
   });
