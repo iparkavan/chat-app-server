@@ -54,3 +54,29 @@ export const getUserChannels: ExpressHandler = async (req, res, next) => {
       .json({ message: "There is a problem while fetching the channels" });
   }
 };
+
+export const getChannelMessages: ExpressHandler = async (req, res, next) => {
+  try {
+    const { channelId } = req.params;
+
+    const channel = await Channel.findById(channelId).populate({
+      path: "messages",
+      populate: {
+        path: "sender",
+        select: "firstName lastName email _id bgColor profileImage",
+      },
+    });
+
+    if (!channel) {
+      res.status(404).json({ message: "Channels not found" });
+    }
+
+    const messages = channel?.messages;
+
+    res.status(201).json({ messages });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "There is a problem while fetching the channels" });
+  }
+};
