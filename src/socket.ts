@@ -5,6 +5,7 @@ import Message from "./models/messages-model";
 import { MessagesTypes } from "./types/constant";
 import Channel from "./models/chennel-model";
 import { create } from "domain";
+import User from "./models/user-model";
 
 const SetupSocket = (server: Server) => {
   const io = new SockeIOServer(server, {
@@ -21,19 +22,6 @@ const SetupSocket = (server: Server) => {
   });
 
   const userSocketMap = new Map();
-
-  // const disconnect = (
-  //   socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
-  // ) => {
-  //   console.log(`client disconnected: ${socket.id}`);
-
-  //   for (const [userId, socketId] of userSocketMap.entries()) {
-  //     if (userId === socketId) {
-  //       userSocketMap.delete(userId);
-  //       break;
-  //     }
-  //   }
-  // };
 
   const disconnect = (socket: Socket) => {
     console.log(`❌ User disconnected: ${socket.id}`);
@@ -86,13 +74,6 @@ const SetupSocket = (server: Server) => {
       .populate("sender", "id email firstName lastName profileImage bgColor")
       .exec();
 
-    // const messageData = await Message.create(message).then((msg) =>
-    //   msg.populate(
-    //     "sender recipient",
-    //     "id email firstName lastName profileImage bgColor"
-    //   )
-    // );
-
     if (!messageData) {
       console.error("Message not found after creation");
       return;
@@ -115,12 +96,10 @@ const SetupSocket = (server: Server) => {
           }
         });
 
-        // if (channel?.admin?._id) {
         const adminSocketId = userSocketMap.get(channel.admin._id.toString());
         if (adminSocketId) {
           io.to(adminSocketId).emit("recieve-channel-message", finalData);
         }
-        // }
       }
     }
   };
@@ -134,6 +113,41 @@ const SetupSocket = (server: Server) => {
     } else {
       console.log("Userid Not provided during the connection");
     }
+
+    // Handle typing event
+    socket.on("typing", async ({ recipientId }) => {
+      try {
+        if (!recipientId) return;
+
+        const recipientSocketId = userSocketMap.get(recipientId);
+        if (!recipientSocketId) return;
+
+        const sender = await User.findById(userId).select(
+          "firstName lastName profileImage"
+        );
+
+        if (sender) {
+          io.to(recipientSocketId).emit("typing", {
+            senderId: userId, // ✅ Now frontend knows who is typing
+            firstName: sender.firstName,
+            lastName: sender.lastName,
+            profileImage: sender.profileImage,
+          });
+        }
+      } catch (error) {
+        console.error("Error handling typing event:", error);
+      }
+    });
+
+    // Handle stop typing event
+    socket.on("stop-typing", ({ recipientId }) => {
+      if (!recipientId) return;
+
+      const recipientSocketId = userSocketMap.get(recipientId);
+      if (recipientSocketId) {
+        io.to(recipientSocketId).emit("stop-typing", { senderId: userId }); // ✅ Send `senderId` to remove only that user
+      }
+    });
 
     socket.on("sendMessage", sendMessage);
     socket.on("send-channel-message", sendChannelMessage);
