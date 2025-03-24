@@ -129,6 +129,7 @@ const SetupSocket = (server: Server) => {
         if (sender) {
           io.to(recipientSocketId).emit("typing", {
             senderId: userId, // ✅ Now frontend knows who is typing
+            // recipientId,
             firstName: sender.firstName,
             lastName: sender.lastName,
             profileImage: sender.profileImage,

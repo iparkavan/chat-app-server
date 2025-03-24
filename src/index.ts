@@ -18,21 +18,6 @@ const port = process.env.PORT || 5000;
 const databaseURL = process.env.DATABASE_URL as string;
 const nextURL = process.env.ORIGIN as string;
 
-// app.use(cors({
-//   origin:[process.env.ORIGIN as string],
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   credentials: true
-// }))
-
-// app.use(
-//   cors({
-//     origin: "https://chat-app-client-rose.vercel.app",
-//     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-//     allowedHeaders: "Content-Type,Authorization",
-//     credentials: true,
-//   })
-// );
-
 const allowedOrigins = [
   "https://chat-app-client-rose.vercel.app",
   "http://localhost:3000",
