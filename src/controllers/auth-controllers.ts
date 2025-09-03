@@ -11,7 +11,6 @@ const createToken = (email: string, userId: string) => {
   return jwt.sign({ email, userId }, JWT_KEY, { expiresIn: maxAge });
 };
 
-
 export const signup: ExpressHandler = async (req, res, next) => {
   try {
     const { firstName, lastName, email, password } = req.body;
@@ -31,8 +30,12 @@ export const signup: ExpressHandler = async (req, res, next) => {
 
     res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
       maxAge,
-      secure: true,
-      sameSite: "none",
+      // secure: true,
+      // sameSite: "none",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // required on Vercel
+      sameSite: "none", // allow cookies across domains
+      // path: "/",
     });
 
     return res.status(201).json({
@@ -194,7 +197,7 @@ export const removeProfileImage: ExpressHandler = async (req, res, next) => {
 
 export const logout: ExpressHandler = async (req, res, next) => {
   try {
-   res.cookie(ACCESS_TOKEN, "", {maxAge: 1, secure: true, sameSite: 'none'})
+    res.cookie(ACCESS_TOKEN, "", { maxAge: 1, secure: true, sameSite: "none" });
     return res.status(200).send("Logout Successfull");
   } catch (error) {
     res.status(500).json({ message: "There is a problem with logging out" });
