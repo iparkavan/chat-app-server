@@ -28,10 +28,18 @@ export const signup: ExpressHandler = async (req, res, next) => {
 
     const user = await User.create({ email, password });
 
+    // res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
+    //   maxAge,
+    //   secure: true,
+    //   sameSite: "none",
+    // });
+
     res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
-      maxAge,
-      secure: true,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none",
+      path: "/",
+      maxAge,
     });
 
     return res.status(201).json({
@@ -70,10 +78,18 @@ export const login: ExpressHandler = async (req, res, next) => {
       return res.status(400).send("Invalid password");
     }
 
+    // res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
+    //   maxAge,
+    //   secure: true,
+    //   sameSite: "none",
+    // });
+
     res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
-      maxAge,
-      secure: true,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none",
+      path: "/",
+      maxAge,
     });
 
     return res.status(200).json({
@@ -193,7 +209,13 @@ export const removeProfileImage: ExpressHandler = async (req, res, next) => {
 
 export const logout: ExpressHandler = async (req, res, next) => {
   try {
-    res.cookie(ACCESS_TOKEN, "", { maxAge: 1, secure: true, sameSite: "none" });
+    // res.cookie(ACCESS_TOKEN, "", { maxAge: 1, secure: true, sameSite: "none" });
+    res.clearCookie(ACCESS_TOKEN, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      path: "/", // important: must match the path used when setting the cookie
+    });
     return res.status(200).send("Logout Successfull");
   } catch (error) {
     res.status(500).json({ message: "There is a problem with logging out" });
