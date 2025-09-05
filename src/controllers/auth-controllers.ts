@@ -84,13 +84,16 @@ export const login: ExpressHandler = async (req, res, next) => {
     //   sameSite: "none",
     // });
 
-    res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      path: "/",
-      maxAge,
-    });
+    // res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "none",
+    //   path: "/",
+    //   maxAge,
+    //   domain: "https://chat-app-server-q8xe.onrender.com",
+    // });
+
+    const token = createToken(email, user.id);
 
     return res.status(200).json({
       id: user.id,
@@ -100,6 +103,7 @@ export const login: ExpressHandler = async (req, res, next) => {
       lastName: user.lastName,
       profileImage: user.profileImage,
       bgColor: user.bgColor,
+      token,
     });
   } catch (error: any) {
     return res.status(400).json({ message: error.message });

@@ -35,10 +35,17 @@ const signup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
                 message: "You have already registered your account, try signin",
             });
         const user = yield user_model_1.default.create({ email, password });
+        // res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
+        //   maxAge,
+        //   secure: true,
+        //   sameSite: "none",
+        // });
         res.cookie(constant_1.ACCESS_TOKEN, createToken(email, user.id), {
-            maxAge,
-            secure: true,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
             sameSite: "none",
+            path: "/",
+            maxAge,
         });
         return res.status(201).json({
             userInfo: {
@@ -71,10 +78,17 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         if (!auth) {
             return res.status(400).send("Invalid password");
         }
+        // res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
+        //   maxAge,
+        //   secure: true,
+        //   sameSite: "none",
+        // });
         res.cookie(constant_1.ACCESS_TOKEN, createToken(email, user.id), {
-            maxAge,
-            secure: true,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
             sameSite: "none",
+            path: "/",
+            maxAge,
         });
         return res.status(200).json({
             id: user.id,
@@ -175,7 +189,13 @@ const removeProfileImage = (req, res, next) => __awaiter(void 0, void 0, void 0,
 exports.removeProfileImage = removeProfileImage;
 const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.cookie(constant_1.ACCESS_TOKEN, "", { maxAge: 1, secure: true, sameSite: 'none' });
+        // res.cookie(ACCESS_TOKEN, "", { maxAge: 1, secure: true, sameSite: "none" });
+        res.clearCookie(constant_1.ACCESS_TOKEN, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "none",
+            path: "/", // important: must match the path used when setting the cookie
+        });
         return res.status(200).send("Logout Successfull");
     }
     catch (error) {
