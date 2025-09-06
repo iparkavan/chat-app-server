@@ -83,13 +83,15 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         //   secure: true,
         //   sameSite: "none",
         // });
-        res.cookie(constant_1.ACCESS_TOKEN, createToken(email, user.id), {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "none",
-            path: "/",
-            maxAge,
-        });
+        // res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
+        //   httpOnly: true,
+        //   secure: process.env.NODE_ENV === "production",
+        //   sameSite: "none",
+        //   path: "/",
+        //   maxAge,
+        //   domain: "https://chat-app-server-q8xe.onrender.com",
+        // });
+        const token = createToken(email, user.id);
         return res.status(200).json({
             id: user.id,
             email: user.email,
@@ -98,6 +100,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
             lastName: user.lastName,
             profileImage: user.profileImage,
             bgColor: user.bgColor,
+            token,
         });
     }
     catch (error) {
@@ -190,12 +193,12 @@ exports.removeProfileImage = removeProfileImage;
 const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // res.cookie(ACCESS_TOKEN, "", { maxAge: 1, secure: true, sameSite: "none" });
-        res.clearCookie(constant_1.ACCESS_TOKEN, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "none",
-            path: "/", // important: must match the path used when setting the cookie
-        });
+        // res.clearCookie(ACCESS_TOKEN, {
+        //   httpOnly: true,
+        //   secure: process.env.NODE_ENV === "production",
+        //   sameSite: "none",
+        //   path: "/", // important: must match the path used when setting the cookie
+        // });
         return res.status(200).send("Logout Successfull");
     }
     catch (error) {

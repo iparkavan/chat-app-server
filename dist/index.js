@@ -18,6 +18,24 @@ const app = (0, express_1.default)();
 const port = process.env.PORT || 5000;
 const databaseURL = process.env.DATABASE_URL;
 const nextURL = process.env.ORIGIN;
+// const allowedOrigins = [
+//   "https://chat-app-client-rose.vercel.app",
+//   "http://localhost:3000",
+// ];
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//   })
+// );
 const allowedOrigins = [
     "https://chat-app-client-rose.vercel.app",
     "http://localhost:3000",
@@ -31,10 +49,12 @@ app.use((0, cors_1.default)({
             callback(new Error("Not allowed by CORS"));
         }
     },
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
     credentials: true,
 }));
+// Make sure Express actually responds to OPTIONS
+app.options("*", (0, cors_1.default)());
 // app.use("/uploads/profiles", express.static("/uploads/profiles"));
 app.use("/src/uploads/profiles", express_1.default.static("src/uploads/profiles"));
 app.use("/src/uploads/files", express_1.default.static("src/uploads/files"));

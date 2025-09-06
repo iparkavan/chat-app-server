@@ -13,7 +13,11 @@ const createToken = (email: string, userId: string) => {
 
 export const signup: ExpressHandler = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const {
+      // firstName, lastName,
+      email,
+      password,
+    } = req.body;
 
     if (!email || !password) {
       return res.status(400).send("Email and password is required");
@@ -34,24 +38,27 @@ export const signup: ExpressHandler = async (req, res, next) => {
     //   sameSite: "none",
     // });
 
-    res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      path: "/",
-      maxAge,
-    });
+    // res.cookie(ACCESS_TOKEN, createToken(email, user.id), {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "none",
+    //   path: "/",
+    //   maxAge,
+    // });
+
+    const token = createToken(email, user.id);
 
     return res.status(201).json({
-      userInfo: {
-        id: user.id,
-        email: user.email,
-        profileSetup: user.profileSetup,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        profileImage: user.profileImage,
-        bgColor: user.bgColor,
-      },
+      // userInfo: {
+      id: user.id,
+      email: user.email,
+      profileSetup: user.profileSetup,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      profileImage: user.profileImage,
+      bgColor: user.bgColor,
+      token,
+      // },
     });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
